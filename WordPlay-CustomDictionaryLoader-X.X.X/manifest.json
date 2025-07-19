@@ -1,0 +1,9 @@
+{
+    "name": "CustomDictionaryLoader",
+    "version_number": "1.0.0",
+    "website_url": "https://github.com/x753/WordPlay-CustomDictionaryLoader",
+    "description": "A library for adding new valid words by loading custom dictionaries.",
+    "dependencies": [
+        "BepInEx-BepInExPack-5.4.2100"
+    ]
+}
