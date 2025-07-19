@@ -13,7 +13,7 @@ namespace CustomDictionaryLoader
     {
         private const string modGUID = "WordPlay.CustomDictionaryLoader";
         private const string modName = "CustomDictionaryLoader";
-        private const string modVersion = "1.0.0";
+        private const string modVersion = "1.0.1";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         internal static ManualLogSource ModLogger;
@@ -38,7 +38,7 @@ namespace CustomDictionaryLoader
             ModLogger.LogInfo($"Plugin {modName} is loaded!");
 
             OverwriteVanilla = Config.Bind("Dictionary", "Overwrite Vanilla Dictionary", false, "If true, custom dictionaries will overwrite the vanilla dictionary instead of adding words to it.").Value;
-            LoadAppDataDictionary = Config.Bind("Dictionary", "Load Dictionary from AppData folder", true, "If true, a customdictionary.txt in Word Play's AppData folder it will be loaded if it exists.").Value;
+            LoadAppDataDictionary = Config.Bind("Dictionary", "Load Dictionary from AppData folder", true, "If true, a customdictionary.txt file in Word Play's AppData folder will be loaded if it exists.").Value;
         }
 
         // ==============================================================================
