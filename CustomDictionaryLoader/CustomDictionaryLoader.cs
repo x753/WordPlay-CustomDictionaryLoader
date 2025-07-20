@@ -13,7 +13,7 @@ namespace CustomDictionaryLoader
     {
         private const string modGUID = "WordPlay.CustomDictionaryLoader";
         private const string modName = "CustomDictionaryLoader";
-        private const string modVersion = "1.0.1";
+        private const string modVersion = "1.1.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         internal static ManualLogSource ModLogger;
@@ -25,6 +25,7 @@ namespace CustomDictionaryLoader
 
         public static List<string> CustomDictionaryPaths;
         public static List<string> CustomValidWords;
+        public static List<string> ManualConfigCustomWords;
 
         private void Awake()
         {
@@ -39,6 +40,11 @@ namespace CustomDictionaryLoader
 
             OverwriteVanilla = Config.Bind("Dictionary", "Overwrite Vanilla Dictionary", false, "If true, custom dictionaries will overwrite the vanilla dictionary instead of adding words to it.").Value;
             LoadAppDataDictionary = Config.Bind("Dictionary", "Load Dictionary from AppData folder", true, "If true, a customdictionary.txt file in Word Play's AppData folder will be loaded if it exists.").Value;
+
+            ManualConfigCustomWords = Config.Bind("Word List", "Manual Custom Words", "", "Comma-separated list of words to add to the valid word list.").Value
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(word => word.Trim().ToUpperInvariant())
+                .ToList();
         }
 
         // ==============================================================================
@@ -59,20 +65,29 @@ namespace CustomDictionaryLoader
                 CustomDictionaryPaths = customDictionaryFolders.SelectMany(d => Directory.EnumerateFiles(d, "*.txt")).ToList();
 
                 string appDataDictionaryPath = Path.Combine(UnityEngine.Application.persistentDataPath, "customdictionary.txt");
-                if (LoadAppDataDictionary && File.Exists(appDataDictionaryPath))
+                if(File.Exists(appDataDictionaryPath))
                 {
-                    CustomDictionaryPaths.Add(appDataDictionaryPath);
-                    ModLogger.LogInfo($"A dictionary was loaded from: {appDataDictionaryPath}");
-                }
-                else
-                {
-                    ModLogger.LogInfo($"This dictionary will not be loaded based on config settings: {appDataDictionaryPath}");
+                    if (LoadAppDataDictionary)
+                    {
+                        CustomDictionaryPaths.Add(appDataDictionaryPath);
+                        ModLogger.LogInfo($"A dictionary was loaded from: {appDataDictionaryPath}");
+                    }
+                    else
+                    {
+                        ModLogger.LogInfo($"This dictionary will not be loaded based on config settings: {appDataDictionaryPath}");
+                    }
                 }
 
                 CustomValidWords = CustomDictionaryPaths.SelectMany(file => File.ReadAllLines(file))
                     .Where(line => !string.IsNullOrWhiteSpace(line))
                     .Select(line => line.ToUpperInvariant())
                     .ToList();
+
+                if (ManualConfigCustomWords.Count > 0)
+                {
+                    CustomValidWords.AddRange(ManualConfigCustomWords);
+                    ModLogger.LogInfo($"Added {ManualConfigCustomWords.Count} custom words from config.");
+                }
 
                 if (OverwriteVanilla)
                 {

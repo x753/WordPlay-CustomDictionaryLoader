@@ -1,3 +1,6 @@
+## v1.1.0 Manual Custom Words Config
+- Add a config option to allow users to manually add custom words (which will be synced by profiles)
+
 ## v1.0.1 Fixes
 - Add a link to a template in the README
 - Fix typos
